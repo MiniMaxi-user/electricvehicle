@@ -43,9 +43,10 @@ export async function fetchStationsAlongRoute(routeCoords, { bufferMeters = 2000
 
   const bbox = boundingBox(routeCoords, bufferMeters)
 
+  // OpenChargeMap expects "(top-left),(bottom-right)", i.e. (north,west),(south,east).
   const url = new URL(OCM_URL)
   url.searchParams.set('output', 'json')
-  url.searchParams.set('boundingbox', `(${bbox.south},${bbox.west}),(${bbox.north},${bbox.east})`)
+  url.searchParams.set('boundingbox', `(${bbox.north},${bbox.west}),(${bbox.south},${bbox.east})`)
   url.searchParams.set('maxresults', String(maxResults))
   url.searchParams.set('compact', 'false')
   url.searchParams.set('verbose', 'true')
@@ -56,6 +57,9 @@ export async function fetchStationsAlongRoute(routeCoords, { bufferMeters = 2000
   }
 
   const data = await res.json()
+  if (!Array.isArray(data)) {
+    throw new Error('Onverwacht antwoord van OpenChargeMap')
+  }
 
   return data
     .map(normalizeStation)

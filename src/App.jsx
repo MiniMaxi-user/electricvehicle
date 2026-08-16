@@ -190,7 +190,7 @@ export default function App() {
         />
         {stationsError && <div className="search-hint error">{stationsError}</div>}
 
-        {stationsStatus === 'ready' && (
+        {stationsStatus === 'ready' && stations.length > 0 && (
           <>
             <FiltersPanel filters={filters} onToggle={toggleFilter} amenitiesWarning={amenitiesWarning} />
             <StationList stations={filteredStations} />

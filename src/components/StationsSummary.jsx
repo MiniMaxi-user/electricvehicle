@@ -11,6 +11,10 @@ export default function StationsSummary({ total, available, filteredTotal, filte
     return null
   }
 
+  if (total === 0) {
+    return <div className="stations-summary">Geen laadpalen gevonden binnen 2 km van deze route.</div>
+  }
+
   return (
     <div className="stations-summary">
       <div className="summary-tile">
