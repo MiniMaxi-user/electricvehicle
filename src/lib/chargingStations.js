@@ -1,6 +1,10 @@
 import { boundingBox, distanceToRoute } from './geo'
 
 const OCM_URL = 'https://api.openchargemap.io/v3/poi'
+// Free key from https://openchargemap.org/site/profile/register — OpenChargeMap
+// rejects unauthenticated /v3/poi requests with 403. Set VITE_OCM_API_KEY as an
+// env var (e.g. in Vercel project settings) to enable station lookups.
+const OCM_API_KEY = import.meta.env.VITE_OCM_API_KEY
 
 function normalizeStation(poi) {
   const connections = (poi.Connections || []).map((c) => ({
@@ -51,7 +55,17 @@ export async function fetchStationsAlongRoute(routeCoords, { bufferMeters = 2000
   url.searchParams.set('compact', 'false')
   url.searchParams.set('verbose', 'true')
 
-  const res = await fetch(url, { headers: { Accept: 'application/json' } })
+  const headers = { Accept: 'application/json' }
+  if (OCM_API_KEY) headers['X-API-Key'] = OCM_API_KEY
+
+  const res = await fetch(url, { headers })
+  if (res.status === 403) {
+    throw new Error(
+      OCM_API_KEY
+        ? 'Laadpalen ophalen mislukt (403) — de OpenChargeMap API-key lijkt ongeldig.'
+        : 'Laadpalen ophalen mislukt (403) — OpenChargeMap vereist een gratis API-key. Zie README.'
+    )
+  }
   if (!res.ok) {
     throw new Error(`Laadpalen ophalen mislukt (${res.status})`)
   }

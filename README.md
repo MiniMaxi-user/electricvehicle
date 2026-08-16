@@ -20,18 +20,27 @@ OpenChargeMap bevat geen live bezettingsdata voor de meeste laadpassen/operators
 - [Vite](https://vite.dev/) + React
 - [Leaflet](https://leafletjs.com/) / [react-leaflet](https://react-leaflet.js.org/) voor de kaart (OpenStreetMap-tegels)
 - [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) voor manifest + service worker
-- Externe, gratis publieke API's (geen API-key nodig, wel eerlijk gebruik):
-  - Nominatim (adres zoeken)
-  - OSRM demo-server (routeberekening)
-  - OpenChargeMap (laadpalen)
-  - Overpass API (voorzieningen: toilet/tankstation/restaurant/McDonald's)
+- Externe API's:
+  - Nominatim (adres zoeken) — geen key nodig, wel eerlijk gebruik
+  - OSRM demo-server (routeberekening) — geen key nodig, wel eerlijk gebruik
+  - OpenChargeMap (laadpalen) — **vereist een gratis API-key**, zie hieronder
+  - Overpass API (voorzieningen: toilet/tankstation/restaurant/McDonald's) — geen key nodig, wel eerlijk gebruik
 
 Alle logica rond geo-berekeningen en API-aanroepen staat in `src/lib/`; UI-componenten staan in `src/components/`.
+
+## OpenChargeMap API-key instellen (verplicht)
+
+OpenChargeMap wijst onbeauthenticeerde `/v3/poi`-verzoeken af met een 403. Zonder key wordt de route wel berekend, maar worden er geen laadpalen getoond.
+
+1. Registreer gratis op <https://openchargemap.org/site/profile/register> en maak een API-key aan op <https://openchargemap.org/site/profile/applications>.
+2. Lokaal: kopieer `.env.example` naar `.env` en vul `VITE_OCM_API_KEY` in.
+3. Op Vercel: **Project Settings → Environment Variables** → voeg `VITE_OCM_API_KEY` toe → redeploy.
 
 ## Lokaal draaien
 
 ```bash
 npm install
+cp .env.example .env   # vul VITE_OCM_API_KEY in
 npm run dev
 ```
 
